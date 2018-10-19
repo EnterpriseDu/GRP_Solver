@@ -2,12 +2,12 @@ SRCS = $(shell find ./src/ -name *.c)
 OBJS = $(SRCS:.c=.o)
 HEADERS = $(shell find ./inc/ -name *.h)
 
-all : Riemann_solver.a
+all : GRP_Solver.a
 
-Riemann_solver.a : $(SRCS) $(HEADERS)
+GRP_Solver.a : $(SRCS) $(HEADERS)
 	$(MAKE) --directory=./src/
-	ar crv Riemann_solver.a $(OBJS)
-	ranlib Riemann_solver.a
+	ar crv GRP_Solver.a $(OBJS)
+	ranlib GRP_Solver.a
 
 
 .PHONY : clean all test
