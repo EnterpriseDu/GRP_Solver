@@ -375,6 +375,7 @@ void linear_GRP_solver_Edir_Q1D
 	      out->VAR.v =   v_R;
 	      out->VAR.p =   p_star;
 	      C = c_star_R;
+	      c_square = C*C;
 
 	      for(it_trans = 0; it_trans < n_trans; ++it_trans)
 		out->VAR.trans[it_trans] = wR->VAR.trans[it_trans];
@@ -386,6 +387,7 @@ void linear_GRP_solver_Edir_Q1D
 	      out->VAR.v =   v_L;
 	      out->VAR.p =   p_star;
 	      C = c_star_L;
+	      c_square = C*C;
 
 	      for(it_trans = 0; it_trans < n_trans; ++it_trans)
 		out->VAR.trans[it_trans] = wL->VAR.trans[it_trans];
