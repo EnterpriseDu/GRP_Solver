@@ -1,4 +1,4 @@
-A Brief Instruction
+A Brief Instruction to *GRP_Solver* -- an implementation of the GRP solver
 ===
 
 How to use
@@ -9,7 +9,7 @@ How to use
   3. Include the header 'GRP_solver/inc/Riemann_solver.h' in the file call the solvers.
   4. Link to the library 'GRP_solver/GRP_Solver.a' when compiling your programm.
 
-introduction
+Introduction
 ---
 
 In this package we mainly implement the GRP solver for the two-dimensional Euler equations of the polytropic gases. The codes are in the file './src/system_GRP_solver.c'. The definition of the API can be also found in the file 'GRP_solver/inc/Riemann_solver.h'.
