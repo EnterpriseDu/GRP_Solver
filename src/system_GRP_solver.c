@@ -25,10 +25,6 @@
  *              additional transport equations
  *   (wL,wR)  : Initial states
  *    para    : parameters
- * +--------------------------------------------------------------+
- * | The codes for calculations of derivatives of the transported |
- * | variables are to be added.                                   |
- * +--------------------------------------------------------------+
  *
  * /   rho_L \
  * |     u_L | : is the left state
@@ -74,6 +70,7 @@
 #include "Riemann_solver.h"
 
 
+
 void linear_GRP_solver_Edir_Q1D
 (double *wave_speed, EulerPack *out, double lambda_x, double lambda_y, int n_trans, EulerPack const *wL, EulerPack const *wR, RSparameters *para)
 {
@@ -112,7 +109,7 @@ void linear_GRP_solver_Edir_Q1D
 
   int CRW[2]={0,0};
   double dist;
-  double c_L, c_R, C, c_frac;
+  double c_L, c_R, C, c_frac, c_square;
 
   double d_Phi, d_Psi, TdS, VAR;
   double D_rho, D_u, D_v, D_p, D_z, D_phi, T_rho, T_u, T_v, T_p, T_z, T_phi; 
@@ -128,10 +125,10 @@ void linear_GRP_solver_Edir_Q1D
   const double zetaL = (gammaL-1.0)/(gammaL+1.0);
   const double zetaR = (gammaR-1.0)/(gammaR+1.0);
  
-  double rho_x;
   double g_rho, g_u, g_p, f;
-
   double speed_L, speed_R;
+
+  int it_trans;
 
   c_L = sqrt(gammaL * p_L / rho_L);
   c_R = sqrt(gammaR * p_R / rho_R);
@@ -175,13 +172,18 @@ void linear_GRP_solver_Edir_Q1D
       if(speed_L > lambda_x) //the direction is on the left side of all the three waves
 	{
 	  out->VAR.rho = rho_L;
-	  out->VAR.u =   u_L;
-	  out->VAR.v =   v_L;
-	  out->VAR.p =   p_L;
+	  out->VAR.u   =   u_L;
+	  out->VAR.v   =   v_L;
+	  out->VAR.p   =   p_L;
 	  out->DER.rho = -(u_L-lambda_x)*d_rho_L - (v_L-lambda_y)*t_rho_L - rho_L*(d_u_L+t_v_L);
-	  out->DER.u = -(u_L-lambda_x)*d_u_L   - (v_L-lambda_y)*t_u_L   - d_p_L/rho_L;
-	  out->DER.v = -(u_L-lambda_x)*d_v_L   - (v_L-lambda_y)*t_v_L   - t_p_L/rho_L;
-	  out->DER.p = -(u_L-lambda_x)*d_p_L   - (v_L-lambda_y)*t_p_L   - rho_L*c_L*c_L*(d_u_L+t_v_L) ;
+	  out->DER.u   = -(u_L-lambda_x)*d_u_L   - (v_L-lambda_y)*t_u_L   - d_p_L/rho_L;
+	  out->DER.v   = -(u_L-lambda_x)*d_v_L   - (v_L-lambda_y)*t_v_L   - t_p_L/rho_L;
+	  out->DER.p   = -(u_L-lambda_x)*d_p_L   - (v_L-lambda_y)*t_p_L   - rho_L*c_L*c_L*(d_u_L+t_v_L) ;
+	  for(it_trans = 0; it_trans < n_trans; ++it_trans)
+	    {
+	      out->VAR.trans[it_trans] = wL->VAR.trans[it_trans];
+	      out->DER.trans[it_trans] = (lambda_x-wL->VAR.u)*wL->DER.trans[it_trans]*(out->VAR.rho/rho_L) + (lambda_y-wL->VAR.v)*wL->TGT.trans[it_trans];
+	    }
 	}
       else if(speed_R < lambda_x) //the direction is on the right side of all the three waves
 	{
@@ -190,9 +192,14 @@ void linear_GRP_solver_Edir_Q1D
 	  out->VAR.v =   v_R;
 	  out->VAR.p =   p_R;
 	  out->DER.rho = -(u_R-lambda_x)*d_rho_R - (v_R-lambda_y)*t_rho_R - rho_R*(d_u_R+t_v_R);
-	  out->DER.u = -(u_R-lambda_x)*d_u_R   - (v_R-lambda_y)*t_u_R   - d_p_R/rho_R;
-	  out->DER.v = -(u_R-lambda_x)*d_v_R   - (v_R-lambda_y)*t_v_R   - t_p_R/rho_R;
-	  out->DER.p = -(u_R-lambda_x)*d_p_R   - (v_R-lambda_y)*t_p_R   - rho_R*c_R*c_R*(d_u_R+t_v_R);
+	  out->DER.u   = -(u_R-lambda_x)*d_u_R   - (v_R-lambda_y)*t_u_R   - d_p_R/rho_R;
+	  out->DER.v   = -(u_R-lambda_x)*d_v_R   - (v_R-lambda_y)*t_v_R   - t_p_R/rho_R;
+	  out->DER.p   = -(u_R-lambda_x)*d_p_R   - (v_R-lambda_y)*t_p_R   - rho_R*c_R*c_R*(d_u_R+t_v_R);
+	  for(it_trans = 0; it_trans < n_trans; ++it_trans)
+	    {
+	      out->VAR.trans[it_trans] = wR->VAR.trans[it_trans];
+	      out->DER.trans[it_trans] = (lambda_x-wR->VAR.u)*wR->DER.trans[it_trans]*(out->VAR.rho/rho_R) + (lambda_y-wR->VAR.v)*wR->TGT.trans[it_trans];
+	    }
 	}
       else
 	{
@@ -238,7 +245,12 @@ void linear_GRP_solver_Edir_Q1D
 	      D_v = d_v_L;
 	      T_v = t_v_L;
 	      D_rho = d_rho_L - d_p_L/(C*C) + D_p/(C*C);
-	      T_rho = t_rho_L - t_p_L/(C*C) + T_p/(C*C);				
+	      T_rho = t_rho_L - t_p_L/(C*C) + T_p/(C*C);
+	      for(it_trans = 0; it_trans < n_trans; ++it_trans)
+		{
+		  out->VAR.trans[it_trans] = wL->VAR.trans[it_trans];
+		  out->DER.trans[it_trans] = (lambda_x-wL->VAR.u)*wL->DER.trans[it_trans]*(out->VAR.rho/rho_L) + (lambda_y-wL->VAR.v)*wL->TGT.trans[it_trans];
+		}
 	    }
 	  else
 	    {
@@ -246,11 +258,16 @@ void linear_GRP_solver_Edir_Q1D
 	      T_v = t_v_R;
 	      D_rho = d_rho_R - d_p_R/(C*C) + D_p/(C*C);
 	      T_rho = t_rho_R - t_p_R/(C*C) + T_p/(C*C);
+	      for(it_trans = 0; it_trans < n_trans; ++it_trans)
+		{
+		  out->VAR.trans[it_trans] = wR->VAR.trans[it_trans];
+		  out->DER.trans[it_trans] = (lambda_x-wR->VAR.u)*wR->DER.trans[it_trans]*(out->VAR.rho/rho_R) + (lambda_y-wR->VAR.v)*wR->TGT.trans[it_trans];
+		}
 	    }
 	  out->DER.rho = -(out->VAR.u-lambda_x)*D_rho - (out->VAR.v-lambda_y)*T_rho - out->VAR.rho*(D_u+T_v);
-	  out->DER.u = -(out->VAR.u-lambda_x)*D_u   - (out->VAR.v-lambda_y)*T_u   - D_p/out->VAR.rho;
-	  out->DER.v = -(out->VAR.u-lambda_x)*D_v   - (out->VAR.v-lambda_y)*T_v   - T_p/out->VAR.rho;
-	  out->DER.p = -(out->VAR.u-lambda_x)*D_p   - (out->VAR.v-lambda_y)*T_p   - out->VAR.rho*C*C*(D_u+T_v);	
+	  out->DER.u   = -(out->VAR.u-lambda_x)*D_u   - (out->VAR.v-lambda_y)*T_u   - D_p/out->VAR.rho;
+	  out->DER.v   = -(out->VAR.u-lambda_x)*D_v   - (out->VAR.v-lambda_y)*T_v   - T_p/out->VAR.rho;
+	  out->DER.p   = -(out->VAR.u-lambda_x)*D_p   - (out->VAR.v-lambda_y)*T_p   - out->VAR.rho*C*C*(D_u+T_v);	
 	}
       return;
     }
@@ -260,24 +277,36 @@ void linear_GRP_solver_Edir_Q1D
   if(speed_L > lambda_x) //the direction is on the left side of all the three waves
     {
       out->VAR.rho = rho_L;
-      out->VAR.u =   u_L;
-      out->VAR.v =   v_L;
-      out->VAR.p =   p_L;
+      out->VAR.u   =   u_L;
+      out->VAR.v   =   v_L;
+      out->VAR.p   =   p_L;
       out->DER.rho = -(u_L-lambda_x)*d_rho_L - (v_L-lambda_y)*t_rho_L - rho_L*(d_u_L+t_v_L);
-      out->DER.u = -(u_L-lambda_x)*d_u_L   - (v_L-lambda_y)*t_u_L   - d_p_L/rho_L;
-      out->DER.v = -(u_L-lambda_x)*d_v_L   - (v_L-lambda_y)*t_v_L   - t_p_L/rho_L;
-      out->DER.p = -(u_L-lambda_x)*d_p_L   - (v_L-lambda_y)*t_p_L   - rho_L*c_L*c_L*(d_u_L+t_v_L);
+      out->DER.u   = -(u_L-lambda_x)*d_u_L   - (v_L-lambda_y)*t_u_L   - d_p_L/rho_L;
+      out->DER.v   = -(u_L-lambda_x)*d_v_L   - (v_L-lambda_y)*t_v_L   - t_p_L/rho_L;
+      out->DER.p   = -(u_L-lambda_x)*d_p_L   - (v_L-lambda_y)*t_p_L   - rho_L*c_L*c_L*(d_u_L+t_v_L);
+
+      for(it_trans = 0; it_trans < n_trans; ++it_trans)
+	{
+	  out->VAR.trans[it_trans] = wL->VAR.trans[it_trans];
+	  out->DER.trans[it_trans] = (lambda_x-wL->VAR.u) * wL->DER.trans[it_trans] + (lambda_y-wL->VAR.v) * wL->TGT.trans[it_trans];
+	}
     }
   else if(speed_R < lambda_x) //the direction is on the right side of all the three waves
     {
       out->VAR.rho = rho_R;
-      out->VAR.u =   u_R;
-      out->VAR.v =   v_R;
-      out->VAR.p =   p_R;
+      out->VAR.u   =   u_R;
+      out->VAR.v   =   v_R;
+      out->VAR.p   =   p_R;
       out->DER.rho = -(u_R-lambda_x)*d_rho_R - (v_R-lambda_y)*t_rho_R - rho_R*(d_u_R+t_v_R);
-      out->DER.u = -(u_R-lambda_x)*d_u_R   - (v_R-lambda_y)*t_u_R   - d_p_R/rho_R;
-      out->DER.v = -(u_R-lambda_x)*d_v_R   - (v_R-lambda_y)*t_v_R   - t_p_R/rho_R;
-      out->DER.p = -(u_R-lambda_x)*d_p_R   - (v_R-lambda_y)*t_p_R   - rho_R*c_R*c_R*(d_u_R+t_v_R);
+      out->DER.u   = -(u_R-lambda_x)*d_u_R   - (v_R-lambda_y)*t_u_R   - d_p_R/rho_R;
+      out->DER.v   = -(u_R-lambda_x)*d_v_R   - (v_R-lambda_y)*t_v_R   - t_p_R/rho_R;
+      out->DER.p   = -(u_R-lambda_x)*d_p_R   - (v_R-lambda_y)*t_p_R   - rho_R*c_R*c_R*(d_u_R+t_v_R);
+
+      for(it_trans = 0; it_trans < n_trans; ++it_trans)
+	{
+	  out->VAR.trans[it_trans] = wR->VAR.trans[it_trans];
+	  out->DER.trans[it_trans] = (lambda_x-wR->VAR.u) * wR->DER.trans[it_trans] + (lambda_y-wR->VAR.v) * wR->TGT.trans[it_trans];
+	}
     }
   else//----non-trivial case----
     {
@@ -302,6 +331,12 @@ void linear_GRP_solver_Edir_Q1D
 	  out->DER.rho = (out->DER.rho + out->DER.p) / C/C;
 
 	  out->DER.v = -(out->VAR.u - lambda_x)*d_v_L*out->VAR.rho/rho_L;
+
+	  for(it_trans = 0; it_trans < n_trans; ++it_trans)
+	    {
+	      out->VAR.trans[it_trans] = wL->VAR.trans[it_trans];
+	      out->DER.trans[it_trans] = (lambda_x-out->VAR.u)*wL->DER.trans[it_trans]*(out->VAR.rho/rho_L) + (lambda_y-out->VAR.v)*wL->TGT.trans[it_trans];                 
+	    }
 	}
       else if(CRW[1] && ((u_star+c_star_R) < lambda_x)) // the direction is in a 3-CRW
 	{
@@ -324,6 +359,12 @@ void linear_GRP_solver_Edir_Q1D
 	  out->DER.rho = (out->DER.rho + out->DER.p) / C/C;
 
 	  out->DER.v = -(out->VAR.u-lambda_x)*d_v_R*out->VAR.rho/rho_R;
+
+	  for(it_trans = 0; it_trans < n_trans; ++it_trans)
+	    {
+	      out->VAR.trans[it_trans] = wR->VAR.trans[it_trans];
+	      out->DER.trans[it_trans] = (lambda_x-out->VAR.u)*wR->DER.trans[it_trans]*(out->VAR.rho/rho_R) + (lambda_y-out->VAR.v)*wR->TGT.trans[it_trans];
+	    }
 	}
       else//--non-sonic case--
 	{
@@ -334,6 +375,9 @@ void linear_GRP_solver_Edir_Q1D
 	      out->VAR.v =   v_R;
 	      out->VAR.p =   p_star;
 	      C = c_star_R;
+
+	      for(it_trans = 0; it_trans < n_trans; ++it_trans)
+		out->VAR.trans[it_trans] = wR->VAR.trans[it_trans];
 	    }
 	  else //the direction is between the 1-wave and the contact discontinuety
 	    {
@@ -342,6 +386,9 @@ void linear_GRP_solver_Edir_Q1D
 	      out->VAR.v =   v_L;
 	      out->VAR.p =   p_star;
 	      C = c_star_L;
+
+	      for(it_trans = 0; it_trans < n_trans; ++it_trans)
+		out->VAR.trans[it_trans] = wL->VAR.trans[it_trans];
 	    }
 
 	  //determine a_L, b_L and d_L
@@ -425,6 +472,9 @@ void linear_GRP_solver_Edir_Q1D
 
 		  out->DER.v = -out->VAR.u*d_v_R*out->VAR.rho/rho_R;
 		  out->DER.v = out->DER.v + lambda_x*d_v_R;
+
+		  for(it_trans = 0; it_trans < n_trans; ++it_trans)
+		    out->DER.trans[it_trans] = ((lambda_x-out->VAR.u)*(out->VAR.rho/rho_R))*wR->DER.trans[it_trans] + (lambda_y-out->VAR.v)*wR->TGT.trans[it_trans];
 		}
 	      else //the 3-wave is a shock
 		{
@@ -436,19 +486,16 @@ void linear_GRP_solver_Edir_Q1D
 		  H2 = rho_R * p_star * (zetaR*zetaR - 1.0) / VAR/VAR;
 		  H3 = (p_star + zetaR*p_R)/VAR;
 
-		  L_rho = shk_u_R * H3 * d_rho_R;
-		  L_u = -rho_R * (H2*c_R*c_R + H3) * d_u_R;
-		  L_p = H2 * shk_u_R * d_p_R;
-
-		  out->DER.rho = ((u_star+shk_u_s)/c_star_R/c_star_R - u_star*H1)*p_t_mat + rho_star_R*u_star*shk_u_s*H1*u_t_mat;
-		  out->DER.rho = (out->DER.rho - u_star*(L_p+L_rho+L_u)) / shk_u_s;
-
-		  f = shk_u_R*(H2*d_p_R + H3*d_rho_R) - rho_R*(H2*c_R*c_R+H3)*d_u_R;
-		  rho_x = (f + H1*(p_t_mat - rho_star_R*shk_u_s*u_t_mat) - out->DER.rho) / (shk_u_R+u_R);//shk_spd;
-		  //out->DER.rho = out->DER.rho + lambda_x*rho_x; (Dr. X.Lei's comments)
+		  f = (out->VAR.u-lambda_x)  *  ( shk_u_R*(H2*d_p_R + H3*d_rho_R) - rho_R*(c_R*c_R*H2 + H3)*d_u_R );
+		  g_p = ( ((shk_u_R+u_R)-lambda_x)/c_square - (out->VAR.u-lambda_x)*H1 ) * p_t_mat;
+		  g_u = out->VAR.rho*(out->VAR.u-lambda_x)*shk_u_s*H1 * u_t_mat;
+		  out->DER.rho = (f - g_p - g_u) / (-shk_u_s);
 
 		  out->DER.v = -out->VAR.u * shk_u_R * d_v_R / shk_u_s;
 		  out->DER.v = out->DER.v + lambda_x*d_v_R;
+
+		  for(it_trans = 0; it_trans < n_trans; ++it_trans)
+		    out->DER.trans[it_trans] = ((lambda_x-out->VAR.u)*(shk_u_R/shk_u_s))*wR->DER.trans[it_trans] + (lambda_y-out->VAR.v)*wR->TGT.trans[it_trans];
 		}
 	    }
 	  else //the direction is between the 1-wave and the contact discontinuety
@@ -461,6 +508,9 @@ void linear_GRP_solver_Edir_Q1D
 
 		  out->DER.v = -out->VAR.u*d_v_L*out->VAR.rho/rho_L;
 		  out->DER.v = out->DER.v + lambda_x*d_v_L;
+
+		  for(it_trans = 0; it_trans < n_trans; ++it_trans)
+		    out->DER.trans[it_trans] = ((lambda_x-out->VAR.u)*(out->VAR.rho/rho_L))*wL->DER.trans[it_trans] + (lambda_y-out->VAR.v)*wL->TGT.trans[it_trans];
 		}
 	      else //the 1-wave is a shock
 		{
@@ -473,19 +523,16 @@ void linear_GRP_solver_Edir_Q1D
 		  H2 = rho_L * p_star * (zetaL*zetaL - 1.0) / VAR/VAR;
 		  H3 = (p_star + zetaL*p_L)/VAR;
 
-		  L_rho = shk_u_L * H3 * d_rho_L;
-		  L_u = -rho_L*(H2*c_L*c_L + H3) * d_u_L;
-		  L_p = H2 * shk_u_L * d_p_L;
-
-		  out->DER.rho = ((u_star+shk_u_s)/c_star_L/c_star_L - H1*u_star)*p_t_mat + rho_star_L*u_star*shk_u_s*H1*u_t_mat;
-		  out->DER.rho = (out->DER.rho - u_star*(L_p+L_rho+L_u))/ shk_u_s;
-
-		  f = shk_u_L*(H2*d_p_L + H3*d_rho_L) - rho_L*(H2*c_L*c_L+H3)*d_u_L;
-		  rho_x = (f + H1*(p_t_mat - rho_star_L*shk_u_s*u_t_mat) - out->DER.rho) / (shk_u_L+u_L);
-		  //out->DER.rho = out->DER.rho + lambda_x*rho_x; (Dr. X.Lei's comments)
+		  f = (out->VAR.u-lambda_x)  *  ( shk_u_L*(H2*d_p_L + H3*d_rho_L) - rho_L*(c_L*c_L*H2 + H3)*d_u_L );
+		  g_p = ( ((shk_u_L+u_L)-lambda_x)/c_square - (out->VAR.u-lambda_x)*H1 ) * p_t_mat;
+		  g_u = out->VAR.rho*(out->VAR.u-lambda_x)*shk_u_s*H1 * u_t_mat;
+		  out->DER.rho = (f - g_p - g_u) / (-shk_u_s);
 
 		  out->DER.v = -out->VAR.u * shk_u_L * d_v_L / shk_u_s;
 		  out->DER.v = out->DER.v + lambda_x*d_v_L;
+
+		  for(it_trans = 0; it_trans < n_trans; ++it_trans)
+		    out->DER.trans[it_trans] = ((lambda_x-out->VAR.u)*(shk_u_L/shk_u_s))*wL->DER.trans[it_trans] + (lambda_y-out->VAR.v)*wL->TGT.trans[it_trans];
 		}
 	    }
 	  //--end of non-sonic case--
@@ -498,7 +545,7 @@ void linear_GRP_solver_Edir_Q1D
 	  out->DER.rho = out->DER.rho - (out->VAR.v-lambda_y)*T_rho - out->VAR.rho*t_v_L;
 	  out->DER.u = out->DER.u - (out->VAR.v-lambda_y)*T_u;
 	  out->DER.v = out->DER.v - (out->VAR.v-lambda_y)*t_v_L - T_p/out->VAR.rho;
-	  out->DER.p = out->DER.p - (out->VAR.v-lambda_y)*T_p   - out->VAR.rho*C*C*t_v_L;							
+	  out->DER.p = out->DER.p - (out->VAR.v-lambda_y)*T_p   - out->VAR.rho*C*C*t_v_L;
 	}
       else
 	{
