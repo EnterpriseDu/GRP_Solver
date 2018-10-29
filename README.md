@@ -26,16 +26,31 @@ Numerical Experiments
 ---
 
 The non-linear GRP solver (by disabling the acoustic case) is tested by the transported of the sine wave and the isentropic flow.
-The numerical errors and orders of the latter problem are
 
 |  m  | L_1 error | L_1 order | L_\infty error | L_\infty order |
 |:---:|:---------:|:---------:|:--------------:|:--------------:|
-|  20 |  9.85e-5  |           |     3.86e-4    |                |
-|  40 |  2.86e-5  |    1.79   |     1.30e-4    |       1.58     |
-|  80 |  7.52e-2  |    1.93   |     3.46e-5    |       1.90     |
-| 160 |  1.93e-5  |    1.96   |     8.92e-6    |       1.96     |
-| 320 |  4.86e-6  |    1.99   |     2.23e-6    |       2.00     |
-| 640 |  1.23e-6  |    1.98   |     6.03e-7    |       1.89     |
-|1280 |  3.14e-7  |    1.97   |     1.87e-7    |       1.69     |
+|  20 |  9.85e-6  |           |     3.86e-5    |                |
+|  40 |  2.86e-6  |    1.79   |     1.30e-5    |       1.58     |
+|  80 |  7.52e-7  |    1.93   |     3.46e-6    |       1.90     |
+| 160 |  1.92e-7  |    1.97   |     8.87e-7    |       1.97     |
+| 320 |  4.86e-8  |    1.98   |     2.24e-7    |       1.99     |
+| 640 |  1.22e-8  |    1.99   |     5.60e-8    |       2.00     |
+|1280 |  3.06e-9  |    2.00   |     1.39e-8    |       2.00     |
+|2560 |  7.64e-10 |    2.00   |     3.14e-9    |       2.03     |
 
 The acoustic case codes are also tested by the same experiments and the results are almost the same which is reasonable since the flow is smooth.
+
+Applied in the two-stage fourth-order GRP scheme, the numerical results for the same problme are listed in the folowing table.
+
+|  m  | L_1 error | L_1 order | L_\infty error | L_\infty order |
+|:---:|:---------:|:---------:|:--------------:|:--------------:|
+|  20 |  1.52e-6  |           |     1.48e-5    |                |
+|  40 |  1.11e-7  |   3.78    |     1.19e-6    |        3.63    |
+|  80 |  7.18e-9  |   3.95    |     7.77e-8    |        3.94    |
+| 160 |  4.53e-10 |   3.99    |     5.00e-9    |        3.96    |
+| 320 |  5.54e-11 |   3.03    |     4.08e-10   |        3.62    |
+| 640 |  5.01e-11 |   0.15    |     1.19e-10   |        1.77    |
+|1280 |  4.99e-11 |   0.01    |     1.01e-10   |        0.24    |
+|2560 |  4.99e-11 |   0.00    |     1.00e-10   |        0.02    |
+
+It seems that the numerical error quickly goes to the round-off error of the present program, i.e. $1e-10$. Therefore it stops to go down further when the computational mesh is more than 320.
