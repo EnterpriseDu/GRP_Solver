@@ -13,43 +13,59 @@
  * wave_speed : wave_speed[0] is the speed of the left wave
  *              wave_speed[1] is the speed of the right wave
  *              they are used in some circumstances
+ * out        : results of Riemann solutions and directional derivatives along
+ *              the direction (dx/dt,dy/dt)=(lambda_x, lambda_y). Includes
+ *               / out.VAR.rho \
+ *               | out.VAR.u   | : is the Riemann solution
+ *               | out.VAR.v   |
+ *               \ out.VAR.p   /
+ *               / out.DER.rho \
+ *               | out.DER.u   | : is the directional derivatives
+ *               | out.DER.v   |
+ *               \ out.DER.p   /
  *
  * The inputs are:
  * /        \
  * |lambda_x| : the direction along which we solve the GRP
- * |lambda_y|   in the case of fixed meshes, lambda is 0
+ * |lambda_y|   in the case of fixed meshes, (lambda_x, lambda_y)=(0,0)
  * \        /
- *   gamma    : is the heat ratio for the polytropic gases
- *   eps      : is the constant epsilon
  *  n_trans   : number of transported variables subject to
  *              additional transport equations
- *   (wL,wR)  : Initial states
- *    para    : parameters
- *
- * /   rho_L \
- * |     u_L | : is the left state
- * |     v_L |
- * \     p_L /
- * / d_rho_L \
- * |   d_u_L | : is the normal derivatives of the left state
- * |   d_v_L |
- * \   d_p_L /
- * / t_rho_L \
- * |   t_u_L | : is the tangential derivatives of the left state
- * |   t_v_L |
- * \   t_p_L /
- * /   rho_R \
- * |     u_R | : is the right state
- * |     v_R |
- * \     p_R /
- * / d_rho_R \
- * |   d_u_R | : is the normal derivatives of the right state
- * |   d_v_R |
- * \   d_p_R /
- * / t_rho_R \
- * |   t_u_R | : is the tangential derivatives of the right state
- * |   t_v_R |
- * \   t_p_R /
+ *   (wL,wR)  : Initial states including:
+ *               gamma       : is the heat ratio for the polytropic gases
+ *               / wL.VAR.rho \
+ *               | wL.VAR.u   | : is the left state
+ *               | wL.VAR.v   |
+ *               \ wL.VAR.p   /
+ *               / wL.DER.rho \
+ *               | wL.DER.u   | : is the normal derivatives of the left state
+ *               | wL.DER.v   |
+ *               \ wL.DER.p   /
+ *               / wL.TGT.rho \
+ *               | wL.TGT.u   | : is the tangential derivatives of the left state
+ *               | wL.TGT.v   |
+ *               \ wL.TGT.p   /
+ *               / wR.VAR.rho \
+ *               | wR.VAR.u   | : is the right state
+ *               | wR.VAR.v   |
+ *               \ wR.VAR.p   /
+ *               / wR.DER.rho \
+ *               | wR.DER.u   | : is the normal derivatives of the right state
+ *               | wR.DER.v   |
+ *               \ wR.DER.p   /
+ *               / wR.TGT.rho \
+ *               | wR.TGT.u   | : is the tangential derivatives of the right state
+ *               | wR.TGT.v   |
+ *               \ wR.TGT.p   /
+ *    para    : parameters including
+ *              eps        : epsilon
+ *              tol        : tolerance for the exact Rieman solver
+ *              N          : maximam number of iterations in the Riemann solver
+ *              radius     : currently no use
+ *              nDim       : currently no use
+ *              geo_factor : geo_factor is 'A/A^\prime' for the quasi 1-D nozzle flow
+ *                             (Aw)_t + (Af(w))_x = -A/A^\prime [0,p,0]^T,
+ *                           where 'A' is the sectional area of the nozzle.
  *
  * In the one-dimensional computations, just set tangential derivatives
  * to be zeros.
@@ -109,7 +125,7 @@ void linear_GRP_solver_Edir_Q1D
 
   int CRW[2]={0,0};
   double dist;
-  double c_L, c_R, C, c_frac, c_square;
+  double c_L, c_R, C, c_frac, c_square, cricit;
 
   double d_Phi, d_Psi, TdS, VAR;
   double D_rho, D_u, D_v, D_p, D_z, D_phi, T_rho, T_u, T_v, T_p, T_z, T_phi; 
@@ -124,6 +140,8 @@ void linear_GRP_solver_Edir_Q1D
   
   const double zetaL = (gammaL-1.0)/(gammaL+1.0);
   const double zetaR = (gammaR-1.0)/(gammaR+1.0);
+  double const _over_gammaL_1 = 1.0/(gammaL-1.0);
+  double const _over_gammaR_1 = 1.0/(gammaR-1.0);
  
   double g_rho, g_u, g_p, f;
   double speed_L, speed_R;
@@ -132,6 +150,13 @@ void linear_GRP_solver_Edir_Q1D
 
   c_L = sqrt(gammaL * p_L / rho_L);
   c_R = sqrt(gammaR * p_R / rho_R);
+
+  cricit = (u_R - 2.0*_over_gammaR_1*c_R) - (u_L + 2.0*_over_gammaL_1*c_L);
+  if((rho_L < eps) || (p_L < eps) || (rho_R < eps) || (p_R < eps) || (cricit > -eps))
+  {
+    vacuum(wave_speed, out, lambda_x, lambda_y, n_trans, wL, wR, para);
+    return;
+  }
 
   dist = (u_L-u_R)*(u_L-u_R) + (p_L-p_R)*(p_L-p_R);
   //=========acoustic case==========

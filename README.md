@@ -9,6 +9,8 @@ How to use
   3. Include the header 'GRP_solver/inc/Riemann_solver.h' in the file call the solvers.
   4. Link to the library 'GRP_solver/GRP_Solver.a' when compiling your programm.
 
+
+
 Introduction
 ---
 
@@ -20,6 +22,29 @@ They rely on the Riemann solver. Here we implement an exact Riemann solver in '.
 The classical HLL solver is also implemented in './src/HLL.c'.
 
 GRP sovlers for some particular scalar equations are implemented in './src/scalar_GRP_solver.c'.
+
+
+
+Interface of the GRP solver 'Euler_GRP_solver'
+---
+
+Since the GRP solver is the key part of the present program package, we briefly introduce the interface of 'Euler_GRP_solver' in 'src/system_Euler_solver.c'.
+
+Firstly, we introduce the structure 'EulerPack' whose definition is seen in 'inc/Riemann_solver.h'. It defines the fluid states. The structure member 'gamma' is the heat ratio of the fluid. Using different gamma's for the left and right fluids allows us to apply the GRP solver for multi-component flows where the two components of the fluid are subject to different heat ratio. The structure members 'VAR', 'DER' and 'TGT' are of type 'EulerVar'. They define the limiting values of [rho,u,v,p] themselves and their normal and tangential derivatives, respectively. For planar 1-D flows, tangential derivatives should be set to be zero. The array 'trans' are additional variables following transport equations in addition to the original Euler equations. They can either follow
+\phi_t+(u,v)\cdot\nabla\phi=0,
+or
+(\rho\phi)_t+\nabla\codt(\rho(u,v)\phi)=0.
+
+Next, we introduce the inputs of the GRP solver which are the third to the last parameters. (lambda_x,lambda_y) defines the direction of the directional derivatives which means the output derivatives of the GRP solver are defined as
+d\rho/dt=\pt\rho/\pt t + lambda_x*\pt\rho/\pt x + lambda_y*\pt\rho/\pt y.
+For fixed meshes, they are zero. 'wL' and 'wR' are the left and right fluid states. 'para' contains some configuration parameters:
+1. 'eps' is epsilon;
+2. 'tol' is the tolerance for the exact Rieman solver;
+3. 'N' is the maximam number of iterations in the Riemann solver.
+'radius' and 'nDim' are currenly abandoned.
+
+The first two parameters are the outputs of the function 'Euler_GRP_solver'. 'wave_speed' are the speeds of the left and right waves. 'out' is the Riemann solution and the directional derivative. The Riemann solutions are contained in 'out.VAR'. the directional derivatives are contained in 'out.DER'.
+
 
 
 Numerical Experiments
