@@ -81,4 +81,4 @@ Applied in the two-stage fourth-order GRP scheme, the numerical results for the 
 |1280 |  4.99e-11 |   0.01    |     1.01e-10   |        0.24    |
 |2560 |  4.99e-11 |   0.00    |     1.00e-10   |        0.02    |
 
-It seems that the numerical error quickly goes to the round-off error of the present program, i.e. $1e-10$. Therefore it stops to go down further when the computational mesh is more than 320.
+It seems that the numerical error quickly goes to the round-off error of the present program, i.e. $1e-10$. Therefore it stops going down further when the computational mesh is more than 320.
