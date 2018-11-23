@@ -28,9 +28,35 @@ GRP sovlers for some particular scalar equations are implemented in './src/scala
 Interface of the GRP solver 'Euler_GRP_solver'
 ---
 
-Since the GRP solver is the key part of the present program package, we briefly introduce the interface of 'Euler_GRP_solver' in 'src/system_Euler_solver.c'.
+Since the GRP solver is the key part of the present program package, we briefly introduce the interface of 'linear_GRP_solver_Edir_Q1D' in 'src/system_Euler_solver.c'.
 
-Firstly, we introduce the structure 'EulerPack' whose definition is seen in 'inc/Riemann_solver.h'. It defines the fluid states. The structure member '\gamma' is the heat ratio of the fluid. Using different \gamma's for the left and right fluids allows us to apply the GRP solver for multi-component flows where the two components of the fluid are subject to different heat ratio. The structure members 'VAR', 'DER' and 'TGT' are of type 'EulerVar'. They define the limiting values of [\rho,u,v,p] themselves and their normal and tangential derivatives, respectively. For planar 1-D flows, tangential derivatives should be set to be zero. The array 'trans' are additional variables following transport equations in addition to the original Euler equations. They can either follow
+Firstly, please refer to the mathematical instruction provided in the package and references therein for basic information of generalized Riemann problem of hyperbolic conservation laws.
+
+The first two parameters of 'linear_GRP_solver_Edir_Q1D' are the output of the GRP solver.
+
+1. 'wave_speed' contains two double variable which are the speeds of the left- and right-most waves, respectively. For example, if the left wave is a rarefaction wave, wave_speed[0] is $u_L-c_L$. If the left wave is a shock, wave_speed[0] is the shock speed.
+2. 'out' contains the Riemann solution and the instantaneous directional derivative of the solution at the initial discontinuity. The Riemann solution and the instantaneous derivative are stored in 'out.VAR' and 'out.DER', respectively. The GRP solver can calculate the instantaneous directional derivative along an arbitrary direction. This parameter is a 'EulerPack' object. 'EulerPack' is a structure defined in 'inc/Riemann_solver.h' containing the fluid state. Details of 'EulerPack' will be given below.
+
+The following parameters are the input of the GRP solver.
+1. The third and fourth parameters 'lambda_x' and 'lambda_y' defines the direction of the directional derivative. For a fixed cell interface, they are 0.
+2. 'n_trans' will be introduced after the definition of 'EulerPack' is given.
+3. The sixth and seventh parameter 'wL' and 'wR' are the initial fluid states on the left and right sides of the initial discontinuity, respectively. As 'out', they are also of the type 'EulerPack', the definition of which will be given below.
+4. The last parameter 'para' contains some configuration parameters:
+  a. 'eps' is epsilon;
+  b. 'tol' is the tolerance for the exact Rieman solver;
+  c. 'N' is the maximam number of iterations in the Riemann solver;
+  d. 'geo_factor' is the geometric factor of the quasi 1-D flow, whose value should be 0 for planar flow;
+  e. 'radius' and 'nDim' are currenly abandoned.
+
+The definition of 'EulerPack' is given in 'inc/Riemann_solver.h'. It is designed to contain the fluid state.
+1. The structure member 'gamma' is the heat ratio of the fluid.
+2. Structure members 'VAR', 'DER' and 'TGT' contains the reconstructed limiting values of the fluid state and its derivatives along the normal and tangential directions of the initial discontinuity, respectively. They are of the type 'EulerVar', the definition of which will be given later.
+
+The structure 'EulerVar' contains four *double* variables and an array of *double*.
+
+The four *double* variables 'rho', 'u', 'v' and 'p' represent the density, normal and tangential components of the velocity and the pressure, respectively. So, 'wL.VAR.rho' is the limiting value of the density on the left side of the initial discontinuity and 'wR.TGT.p' is the limiting value of the tangential derivative of the pressure on the right side of the initial discontinuity.
+
+The array 'trans' contains the additional variables following transport equations in addition to the original Euler equations. They can either follow
 
 \phi_t+(u,v)\cdot\nabla\phi=0,
 
@@ -38,16 +64,9 @@ or
 
 (\rho\phi)_t+\nabla\cdot(\rho(u,v)\phi)=0.
 
-Next, we introduce the inputs of the GRP solver which are the third to the last parameters. (lambda_x,lambda_y) defines the direction of the directional derivatives which means the output derivatives of the GRP solver are defined as
-d\rho/dt=\pt\rho/\pt t + lambda_x*\pt\rho/\pt x + lambda_y*\pt\rho/\pt y.
-For fixed meshes, they are zero. 'wL' and 'wR' are the left and right fluid states. 'para' contains some configuration parameters:
-1. 'eps' is epsilon;
-2. 'tol' is the tolerance for the exact Rieman solver;
-3. 'N' is the maximam number of iterations in the Riemann solver.
-'radius' and 'nDim' are currenly abandoned.
+The length of the array 'trans' in 'EulerVAR' is given by the fifth parameter 'n_trans'.
 
-At last, we introduce the output of the GRP solver. The first two parameters are the outputs of the function 'Euler_GRP_solver'. 'wave_speed' are the speeds of the left and right waves. 'out' is the Riemann solution and the directional derivative. The Riemann solutions are contained in 'out.VAR'. the directional derivatives are contained in 'out.DER'.
-
+**Remark:** The heat ratios in 'wL' and 'wR' are not necessarily the same. This allows the current version of the GRP solver to deal with multi-component fluid with varying heat ratio.
 
 
 Numerical Experiments
