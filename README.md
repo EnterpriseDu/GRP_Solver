@@ -32,14 +32,20 @@ Since the GRP solver is the key part of the present program package, we briefly 
 
 Firstly, please refer to the mathematical instruction provided in the package and references therein for basic information of generalized Riemann problem of hyperbolic conservation laws.
 
+The input
+--
+
 The first two parameters of 'linear_GRP_solver_Edir_Q1D' are the output of the GRP solver.
 
 1. 'wave_speed' contains two double variable which are the speeds of the left- and right-most waves, respectively. For example, if the left wave is a rarefaction wave, wave_speed[0] is $u_L-c_L$. If the left wave is a shock, wave_speed[0] is the shock speed.
 2. 'out' contains the Riemann solution and the instantaneous directional derivative of the solution at the initial discontinuity. The Riemann solution and the instantaneous derivative are stored in 'out.VAR' and 'out.DER', respectively. The GRP solver can calculate the instantaneous directional derivative along an arbitrary direction. This parameter is a 'EulerPack' object. 'EulerPack' is a structure defined in 'inc/Riemann_solver.h' containing the fluid state. Details of 'EulerPack' will be given below.
 
+The output
+--
+
 The following parameters are the input of the GRP solver.
 1. The third and fourth parameters 'lambda_x' and 'lambda_y' defines the direction of the directional derivative. For a fixed cell interface, they are 0.
-2. 'n_trans' will be introduced after the definition of 'EulerPack' is given.
+2. 'n_trans' will be introduced after the definition of 'EulerPack' is given in the next subsection.
 3. The sixth and seventh parameter 'wL' and 'wR' are the initial fluid states on the left and right sides of the initial discontinuity, respectively. As 'out', they are also of the type 'EulerPack', the definition of which will be given below.
 4. The last parameter 'para' contains some configuration parameters:
   **a**. 'eps' is epsilon;
@@ -47,6 +53,9 @@ The following parameters are the input of the GRP solver.
   **c**. 'N' is the maximam number of iterations in the Riemann solver;
   **d**. 'geo_factor' is the geometric factor of the quasi 1-D flow, whose value should be 0 for planar flow;
   **e**. 'radius' and 'nDim' are currenly abandoned.
+
+The structure 'EulerPack'
+--
 
 The definition of 'EulerPack' is given in 'inc/Riemann_solver.h'. It is designed to contain the fluid state.
 1. The structure member 'gamma' is the heat ratio of the fluid.
