@@ -42,11 +42,11 @@ The following parameters are the input of the GRP solver.
 2. 'n_trans' will be introduced after the definition of 'EulerPack' is given.
 3. The sixth and seventh parameter 'wL' and 'wR' are the initial fluid states on the left and right sides of the initial discontinuity, respectively. As 'out', they are also of the type 'EulerPack', the definition of which will be given below.
 4. The last parameter 'para' contains some configuration parameters:
-  a. 'eps' is epsilon;
-  b. 'tol' is the tolerance for the exact Rieman solver;
-  c. 'N' is the maximam number of iterations in the Riemann solver;
-  d. 'geo_factor' is the geometric factor of the quasi 1-D flow, whose value should be 0 for planar flow;
-  e. 'radius' and 'nDim' are currenly abandoned.
+  **a**. 'eps' is epsilon;
+  **b**. 'tol' is the tolerance for the exact Rieman solver;
+  **c**. 'N' is the maximam number of iterations in the Riemann solver;
+  **d**. 'geo_factor' is the geometric factor of the quasi 1-D flow, whose value should be 0 for planar flow;
+  **e**. 'radius' and 'nDim' are currenly abandoned.
 
 The definition of 'EulerPack' is given in 'inc/Riemann_solver.h'. It is designed to contain the fluid state.
 1. The structure member 'gamma' is the heat ratio of the fluid.
