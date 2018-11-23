@@ -6,7 +6,7 @@ How to use
 
   1. Enter the directory 'GRP_solver/'.
   2. Run 'make'.
-  3. Include the header 'GRP_solver/inc/Riemann_solver.h' in the file call the solvers.
+  3. Include the header 'GRP_solver/inc/Riemann_solver.h' in the source file where the solvers are called.
   4. Link to the library 'GRP_solver/GRP_Solver.a' when compiling your programm.
 
 
@@ -67,16 +67,13 @@ The four *double* variables 'rho', 'u', 'v' and 'p' represent the density, norma
 
 The array 'trans' contains the additional variables following transport equations in addition to the original Euler equations. They can either follow
 
-\phi_t+(u,v)\cdot\nabla\phi=0,
-
-or
-
-(\rho\phi)_t+\nabla\cdot(\rho(u,v)\phi)=0.
+$\phi_t+(u,v)\cdot\nabla\phi=0$, or $(\rho\phi)_t+\nabla\cdot(\rho(u,v)\phi)=0$.
 
 The length of the array 'trans' in 'EulerVAR' is given by the fifth parameter 'n_trans'.
 
 **Remark:** The heat ratios in 'wL' and 'wR' are not necessarily the same. This allows the current version of the GRP solver to deal with multi-component fluid with varying heat ratio.
 
+**Remark:** The Riemann solver 'Euler_Godunov_solver' has the same interface as that of 'linear_GRP_solver_Edir_Q1D'.
 
 Numerical Experiments
 ---
