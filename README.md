@@ -1,13 +1,13 @@
 A Brief Instruction to *GRP_Solver* -- an implementation of the GRP solver
 ===
 
-How to use
+A quick start
 ---
 
-  1. Enter the directory 'GRP_solver/'.
+  1. Cast to the directory 'GRP_solver/'.
   2. Run 'make'.
   3. Include the header 'GRP_solver/inc/Riemann_solver.h' in the source file where the solvers are called.
-  4. Link to the library 'GRP_solver/GRP_Solver.a' when compiling your programm.
+  4. Link to the archive 'GRP_solver/GRP_Solver.a' when compiling your programm.
 
 
 
@@ -33,7 +33,7 @@ Since the GRP solver is the key part of the present program package, we briefly 
 Firstly, please refer to the mathematical instruction provided in the package and references therein for basic information of generalized Riemann problem of hyperbolic conservation laws.
 
 The input
---
+-
 
 The first two parameters of 'linear_GRP_solver_Edir_Q1D' are the output of the GRP solver.
 
@@ -41,7 +41,7 @@ The first two parameters of 'linear_GRP_solver_Edir_Q1D' are the output of the G
 2. 'out' contains the Riemann solution and the instantaneous directional derivative of the solution at the initial discontinuity. The Riemann solution and the instantaneous derivative are stored in 'out.VAR' and 'out.DER', respectively. The GRP solver can calculate the instantaneous directional derivative along an arbitrary direction. This parameter is a 'EulerPack' object. 'EulerPack' is a structure defined in 'inc/Riemann_solver.h' containing the fluid state. Details of 'EulerPack' will be given below.
 
 The output
---
+-
 
 The following parameters are the input of the GRP solver.
 1. The third and fourth parameters 'lambda_x' and 'lambda_y' defines the direction of the directional derivative. For a fixed cell interface, they are 0.
@@ -55,7 +55,7 @@ The following parameters are the input of the GRP solver.
   **e**. 'radius' and 'nDim' are currenly abandoned.
 
 The structure 'EulerPack'
---
+-
 
 The definition of 'EulerPack' is given in 'inc/Riemann_solver.h'. It is designed to contain the fluid state.
 1. The structure member 'gamma' is the heat ratio of the fluid.
@@ -75,7 +75,7 @@ The length of the array 'trans' in 'EulerVAR' is given by the fifth parameter 'n
 
 **Remark:** The Riemann solver 'Euler_Godunov_solver' has the same interface as that of 'linear_GRP_solver_Edir_Q1D'.
 
-Numerical Experiments
+Numerical experiments
 ---
 
 The non-linear GRP solver (by disabling the acoustic case) is tested by the transported of the sine wave and the isentropic flow.
