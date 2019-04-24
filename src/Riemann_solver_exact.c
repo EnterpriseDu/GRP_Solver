@@ -206,7 +206,7 @@ double Riemann_solver_exact(double * U_star, double * P_star, double gammaL, dou
     {
       delta_p = p_INT - p_R;
       v_R = sqrt(1.0 + nuR*delta_p/p_R);
-      v_R = delta_p * _over_gamma_p_L * (c_R / v_R);
+      v_R = delta_p * _over_gamma_p_R * (c_R / v_R);
       v_R = u_R + v_R;
     }
     else
