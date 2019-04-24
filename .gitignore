@@ -1,6 +1,7 @@
 *.[oa]
 *~
 null
+.vscode/ipch
 
 compile/*.[oa]
 file_io/*.[oa]
