@@ -60,7 +60,7 @@ void vaccum(double wave_speed[2], EulerPack *out, double lambda_x, double lambda
 void vacuum_Godunov(double wave_speed[2], EulerPack *out, double lambda_x, double lambda_y, int n_trans, EulerPack const *wL, EulerPack const *wR, RSparameters *para);
 
 
-void Euler_GRP_left(double wave_speed[2], EulerPack *res, double u_star, double acc, double dudy, EulerPack *wL, RSparameters *para);
+void Euler_GRP_left(double wave_speed[2], EulerPack *res, double lambda_x, double lambda_y, double u_star, double acc, double dudy, EulerPack *wL, RSparameters *para);
 
 void Euler_Godunov_left(double wave_speed[2], EulerPack *res, double u_star, EulerPack *wL, RSparameters *para);
 
