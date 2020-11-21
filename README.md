@@ -32,7 +32,7 @@ Since the GRP solver is the key part of the present program package, we briefly 
 
 Firstly, please refer to the mathematical instruction provided in the package and references therein for basic information of generalized Riemann problem of hyperbolic conservation laws.
 
-The input
+The output
 -
 
 The first two parameters of 'linear_GRP_solver_Edir_Q1D' are the output of the GRP solver.
@@ -40,7 +40,7 @@ The first two parameters of 'linear_GRP_solver_Edir_Q1D' are the output of the G
 1. 'wave_speed' contains two double variable which are the speeds of the left- and right-most waves, respectively. For example, if the left wave is a rarefaction wave, wave_speed[0] is $u_L-c_L$. If the left wave is a shock, wave_speed[0] is the shock speed.
 2. 'out' contains the Riemann solution and the instantaneous directional derivative of the solution at the initial discontinuity. The Riemann solution and the instantaneous derivative are stored in 'out.VAR' and 'out.DER', respectively. The GRP solver can calculate the instantaneous directional derivative along an arbitrary direction. This parameter is a 'EulerPack' object. 'EulerPack' is a structure defined in 'inc/Riemann_solver.h' containing the fluid state. Details of 'EulerPack' will be given below.
 
-The output
+The input
 -
 
 The following parameters are the input of the GRP solver.
