@@ -55,7 +55,7 @@ void HLL_consv(double wave_speed[2], double F[5], double U[5], double lambda, RS
  */
 void Euler_GRP_solver(double wave_speed[2], EulerPack *out, double lambda_x, double lambda_y, int n_trans, EulerPack const *wL, EulerPack const *wR, RSparameters *para);
 
-void vaccum(double wave_speed[2], EulerPack *out, double lambda_x, double lambda_y, int n_trans, EulerPack const *wL, EulerPack const *wR, RSparameters *para);
+void vacuum(double wave_speed[2], EulerPack *out, double lambda_x, double lambda_y, int n_trans, EulerPack const *wL, EulerPack const *wR, RSparameters *para);
 
 void vacuum_Godunov(double wave_speed[2], EulerPack *out, double lambda_x, double lambda_y, int n_trans, EulerPack const *wL, EulerPack const *wR, RSparameters *para);
 

@@ -97,13 +97,13 @@ Applied in the two-stage fourth-order GRP scheme, the numerical results for the 
 
 |  m  | L_1 error | L_1 order | L_\infty error | L_\infty order |
 |:---:|:---------:|:---------:|:--------------:|:--------------:|
-|  20 |  1.52e-6  |           |     1.48e-5    |                |
-|  40 |  1.11e-7  |   3.78    |     1.19e-6    |        3.63    |
-|  80 |  7.18e-9  |   3.95    |     7.77e-8    |        3.94    |
-| 160 |  4.53e-10 |   3.99    |     5.00e-9    |        3.96    |
-| 320 |  5.54e-11 |   3.03    |     4.08e-10   |        3.62    |
-| 640 |  5.01e-11 |   0.15    |     1.19e-10   |        1.77    |
-|1280 |  4.99e-11 |   0.01    |     1.01e-10   |        0.24    |
-|2560 |  4.99e-11 |   0.00    |     1.00e-10   |        0.02    |
+|  20 |  3.60e-5  |           |     5.86e-5    |                |
+|  40 |  1.20e-6  |   4.90    |     1.89e-6    |        4.96    |
+|  80 |  4.71e-8  |   4.67    |     7.40e-8    |        4.67    |
+| 160 |  2.31e-9  |   4.35    |     3.63e-9    |        4.35    |
+| 320 |  1.33e-10 |   4.12    |     2.09e-10   |        4.12    |
+| 640 |  8.11e-12 |   4.03    |     1.28e-11   |        4.03    |
+|1280 |  4.98e-13 |   4.03    |     8.42e-13   |        3.92    |
+|2560 |  7.56e-14 |   2.72    |     2.44e-13   |        1.78    |
 
 It seems that the numerical error quickly goes to the round-off error of the present program, i.e. $1e-10$. Therefore it stops going down further when the computational mesh is more than 320.
