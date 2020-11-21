@@ -78,7 +78,7 @@ The length of the array 'trans' in 'EulerVAR' is given by the fifth parameter 'n
 Numerical experiments
 ---
 
-The non-linear GRP solver (by disabling the acoustic case) is tested by the transported of the sine wave and the isentropic flow.
+The non-linear GRP solver (by disabling the acoustic case) is tested by the transported of the sine wave.
 
 |  m  | L_1 error | L_1 order | L_\infty error | L_\infty order |
 |:---:|:---------:|:---------:|:--------------:|:--------------:|
@@ -97,13 +97,11 @@ Applied in the two-stage fourth-order GRP scheme, the numerical results for the 
 
 |  m  | L_1 error | L_1 order | L_\infty error | L_\infty order |
 |:---:|:---------:|:---------:|:--------------:|:--------------:|
-|  20 |  3.60e-5  |           |     5.86e-5    |                |
-|  40 |  1.20e-6  |   4.90    |     1.89e-6    |        4.96    |
-|  80 |  4.71e-8  |   4.67    |     7.40e-8    |        4.67    |
-| 160 |  2.31e-9  |   4.35    |     3.63e-9    |        4.35    |
-| 320 |  1.33e-10 |   4.12    |     2.09e-10   |        4.12    |
-| 640 |  8.11e-12 |   4.03    |     1.28e-11   |        4.03    |
-|1280 |  4.98e-13 |   4.03    |     8.42e-13   |        3.92    |
-|2560 |  7.56e-14 |   2.72    |     2.44e-13   |        1.78    |
+|  20 |  4.35e-5  |           |     7.01e-5    |                |
+|  40 |  1.37e-6  |   5.00    |     2.15e-6    |        5.03    |
+|  80 |  4.28e-8  |   5.00    |     6.72e-8    |        5.00    |
+| 160 |  1.34e-9  |   5.00    |     2.11e-9    |        5.00    |
+| 320 |  4.26e-11 |   4.98    |     6.69e-10   |        4.98    |
+| 640 |  1.40e-12 |   4.93    |     2.22e-11   |        4.91    |
+|1280 |  5.06e-13 |   4.79    |     1.13e-13   |        4.29    |
 
-The tolerance for the Riemann solution is set to be 1e-12. The error of the numerical solution stops going down when it attains 5e-13.
