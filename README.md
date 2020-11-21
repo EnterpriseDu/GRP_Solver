@@ -106,4 +106,4 @@ Applied in the two-stage fourth-order GRP scheme, the numerical results for the 
 |1280 |  4.98e-13 |   4.03    |     8.42e-13   |        3.92    |
 |2560 |  7.56e-14 |   2.72    |     2.44e-13   |        1.78    |
 
-It seems that the numerical error quickly goes to the round-off error of the present program, i.e. $1e-10$. Therefore it stops going down further when the computational mesh is more than 320.
+The tolerance for the Riemann solution is set to be 1e-12. The error of the numerical solution stops going down when it attains 5e-13.
